@@ -49,6 +49,7 @@ static const Layout layouts[] = {
    { "===",      bstackhoriz },
    { "|M|",      centeredmaster },
    { ">M>",      centeredfloatingmaster },
+   { "D",       doubledeck },
 };
 
 /* key definitions */
@@ -90,6 +91,7 @@ static Key keys[] = {
    { MODKEY,                       XK_o,      setlayout,      {.v = &layouts[6]} },
    { MODKEY,                       XK_u,      setlayout,      {.v = &layouts[7]} },
    { MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[8]} },
+   { MODKEY,                       XK_c,      setlayout,      {.v = &layouts[9]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
