@@ -166,7 +166,7 @@ static Key keys[] = {
 
   /* pamixer commands to be included here... */
   
-  { MODKEY,                       XK_q,      killclient      {0} },
+  { MODKEY,                       XK_q,      killclient,     {0} },
   { MODKEY|ShiftMask,             XK_q,      quit,           {0} },
   { MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
   { MODKEY|ShiftMask,             XK_w,      spawn,          SHCMD(TERMINAL "-e sudo nmtui") },
