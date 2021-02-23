@@ -57,7 +57,7 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define NUMTAGS                 (LENGTH(tags) + LENGTH(scratchpads))
-#define SPTAG(i)                ((1 << length(tags)) << (i))
+#define SPTAG(i)                ((1 << LENGTH(tags)) << (i))
 #define SPTAGMASK               (((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
 #define TAGMASK                 ((1 << NUMTAGS) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
@@ -231,7 +231,7 @@ static void tagmon(const Arg *arg);
 static Client *termforwin(const Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
-static void togglefullscreen(const Arg *arg);
+static void togglefullscr(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void togglesticky(const Arg *arg);
 static void toggletag(const Arg *arg);
