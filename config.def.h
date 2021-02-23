@@ -166,6 +166,8 @@ static Key keys[] = {
 
   /* pamixer commands to be included here... */
   
+  { MODKEY,                       XK_Tab,    view,           {0} },
+
   { MODKEY,                       XK_q,      killclient,     {0} },
   { MODKEY|ShiftMask,             XK_q,      quit,           {0} },
   { MODKEY,                       XK_w,      spawn,          SHCMD("$BROWSER") },
@@ -207,28 +209,49 @@ static Key keys[] = {
   { MODKEY|ShiftMask,             XK_g,      shifttag,       {.i = -1} },
 
   { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-
-  { MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-  { MODKEY,                       XK_b,      togglebar,      {0} },
-  { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-  { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-  { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+  /* XK_j and XK_k bound in STACKKEYS above */
   { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-  { MODKEY,                       XK_Return, zoom,           {0} },
-  { MODKEY,                       XK_Tab,    view,           {0} },
+
+  { MODKEY,                       XK_semicolon, shiftview    { .i = 1 } },
+  { MODKEY|ShiftMask,             XK_semicolon, tagview      { .i = 1 } },
+
+  {MODKEY,                        XK_apostrophe, togglescratch, {.ui = 1} },
+  
+  { MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+  {MODKEY|ShiftMask,              XK_Return, togglescratch,  {.ui = 0} },
+
+  
+  { MODKEY,                       XK_z,      incrgaps,       {.i = +3 } },
+  { MODKEY,                       XK_x,      incrgaps,       {.i = -3 } },
   { MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 
+  { MODKEY,                       XK_b,      togglebar,      {0} },
+  /* XK_v bound in STACKKEYS above */
 
-  { MODKEY,                       XK_z,      incrgaps,       {.i = +1 } },
-  { MODKEY,                       XK_x,      incrgaps,       {.i = -1 } },
+  { MODKEY,                       XK_Left,   focusmon,       {.i = -1 } },
+  { MODKEY|ShiftMask,             XK_Left,   tagmon,         {.i = -1 } },
+  { MODKEY,                       XK_Right,  focusmon,       {.i = +1 } },
+  { MODKEY|ShiftMask,             XK_Right,  tagmon,         {.i = +1 } },
 
-  { MODKEY,                       XK_space,  setlayout,      {0} },
+  { MODKEY,                       XK_Page_Up,   shiftview,   { .i = -1 } },
+  { MODKEY|ShiftMask,             XK_Page_Up,   shifttag,    { .i = -1 } },
+  { MODKEY,                       XK_Page_Down, shiftview,   { .i = +1 } },
+  { MODKEY|ShiftMask,             XK_Page_Down, shifttag,    { .i = +1 } },
+
+  { MODKEY,                       XK_F9,        spawn,       SHCMD("dmenumount") },
+  { MODKEY,                       XK_F10,       spawn,       SHCMD("dmenuumount") },
+
+  { MODKEY,                       XK_space,  zoom,           {0} },
   { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+
   { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
   { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
   { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
   { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
- 
+
+  { 0,            XF86XK_MonBrightnessUp,    spawn,          SHCMD("xbacklight -inc 15") },
+  { 0,            XF86XK_MonBrightnessDown,  spawn,          SHCMD("xbacklight -dec 15") },
+  
 };
 
 /* button definitions */
