@@ -213,7 +213,7 @@ static Key keys[] = {
   { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 
   { MODKEY,                       XK_semicolon, shiftview,   { .i = 1 } },
-  { MODKEY|ShiftMask,             XK_semicolon, tagview,     { .i = 1 } },
+  { MODKEY|ShiftMask,             XK_semicolon, shifttag,    { .i = 1 } },
 
   {MODKEY,                        XK_apostrophe, togglescratch, {.ui = 1} },
   
