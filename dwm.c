@@ -50,11 +50,16 @@
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
+#define GETINC(X)               ((X) - 2000)
+#define INC(X)                  ((X) + 2000)
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
+#define ISINC(X)                ((X) > 1000 && (X) < 3000)
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
+#define PREVSEL                 3000
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+#define MOD(N,M)                ((N)%(M) < 0 ? (N)%(M) + (M) : (N)%(M))
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define NUMTAGS                 (LENGTH(tags) + LENGTH(scratchpads))
@@ -62,8 +67,7 @@
 #define SPTAGMASK               (((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
 #define TAGMASK                 ((1 << NUMTAGS) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
-
-
+#define TRUNC(X,A,B)            (MAX((A), MIN(X), (B)))
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
@@ -206,7 +210,7 @@ static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
-static void pushstack(comst Arg *arg);
+static void pushstack(const Arg *arg);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
@@ -259,6 +263,8 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+static void load_xresources(void);
+static void resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2370,6 +2376,61 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
+void
+load_xresources(void)
+{
+  Display *display;
+  char *resm;
+  XrmDatabase db;
+  ResourcePref *p;
+  
+  display = XOpenDisplay(NULL);
+  resm = XResourceManagerString(display);
+  if (!resm)
+    return;
+  
+  db = XrmGetStringDatabase(resm);
+  for (p = resources; p < resources + LENGTH(resources); p++)
+    resource_load(db, p->name, p->type, p->dst);
+  XCloseDisplay(display);
+}
+
+
+void
+resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
+{
+  char *sdst = NULL;
+  int *idst = NULL;
+  float *fdst = NULL;
+  
+  sdst = dst;
+  idst = dst;
+  fdst = dst;
+  
+  char fullname[256];
+  char *type;
+  XrmValue ret;
+  
+  snprintf(fullname, sizeof(fullname), "%s.%s", "dwm", name);
+  fullname[sizeof(fullname) - 1] = '\0';
+  
+  XrmGetResource(db, fullname, "*", &type, &ret);
+  if (!(ret.addr == NULL || strncmp("String", type, 64))) {
+    switch (rtype) {
+    case STRING:
+      strcpy(sdst, ret.addr);
+      break;
+    case INTEGER:
+      *idst = strtoul(ret.addr, NULL, 10);
+      break;
+    case FLOAT:
+      *fdst = strtof(ret.addr, NULL);
+      break;
+    }
+  }
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -2384,6 +2445,8 @@ main(int argc, char *argv[])
   if (!(xcon = XGetXCBConnection(dpy)))
     die("dwm: cannot get xcb connection\n");
   checkotherwm();
+  XrmInitialize();
+  load_xresources();
   setup();
 #ifdef __OpenBSD__
   if (pledge("stdio rpath proc exec", NULL) == -1)
