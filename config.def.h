@@ -117,7 +117,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *termcmd[]  = { TERMINAL, NULL };
 
 /*
  * Xresources preferences to load at startup
@@ -163,8 +163,14 @@ static Key keys[] = {
 
   { MODKEY,                       XK_0,      view,           {.ui = ~0 } },
   { MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-
+  
   /* pamixer commands to be included here... */
+  { MODKEY,	                      XK_minus,  spawn,          SHCMD("pamixer --allow-boost -d 5; kill -44 $(pidof dwmblocks)") },
+  { MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD("pamixer --allow-boost -d 15; kill -44 $(pidof dwmblocks)") },
+  { MODKEY,                       XK_equal,  spawn,          SHCMD("pamixer --allow-boost -i 5; kill -44 $(pidof dwmblocks)") },
+  { MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("pamixer --allow-boost -i 15; kill -44 $(pidof dwmblocks)") },
+  { MODKEY,                       XK_BackSpace, spawn,       SHCMD("sysact") },
+  { MODKEY|ShiftMask,             XK_BackSpace, spawn,       SHCMD("sysact") },
   
   { MODKEY,                       XK_Tab,    view,           {0} },
 
@@ -227,6 +233,10 @@ static Key keys[] = {
 
   { MODKEY,                       XK_b,      togglebar,      {0} },
   /* XK_v bound in STACKKEYS above */
+  /*{ MODKEY,                       XK_n,      spawn,          SHCMD(TERMINAL " -e nvim -c VimwikiIndex") },*/
+	{ MODKEY|ShiftMask,            XK_n,      spawn,          SHCMD(TERMINAL " -e newsboat; pkill -RTMIN+6 dwmblocks") },
+	{ MODKEY,                      XK_m,      spawn,          SHCMD(TERMINAL " -e ncmpcpp") },
+	{ MODKEY|ShiftMask,            XK_m,      spawn,          SHCMD("pamixer -t; kill -44 $(pidof dwmblocks)") },
 
   { MODKEY,                       XK_Left,   focusmon,       {.i = -1 } },
   { MODKEY|ShiftMask,             XK_Left,   tagmon,         {.i = -1 } },
@@ -238,19 +248,52 @@ static Key keys[] = {
   { MODKEY,                       XK_Page_Down, shiftview,   { .i = +1 } },
   { MODKEY|ShiftMask,             XK_Page_Down, shifttag,    { .i = +1 } },
 
+  { MODKEY,                       XK_F3,        spawn,       SHCMD("displayselect") },
+  { MODKEY,                       XK_F4,        spawn,       SHCMD(TERMINAL " -e pulsemixer; kill -44 $(pidof dwmblocks)") },
+
   { MODKEY,                       XK_F9,        spawn,       SHCMD("dmenumount") },
   { MODKEY,                       XK_F10,       spawn,       SHCMD("dmenuumount") },
 
   { MODKEY,                       XK_space,  zoom,           {0} },
   { MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 
-  { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-  { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-  { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-  { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+  { MODKEY,                       XK_comma,  spawn,          SHCMD("mpc prev") },
+  { MODKEY,                       XK_period, spawn,          SHCMD("mpc seek 0%") },
+  { MODKEY|ShiftMask,             XK_comma,  spawn,          SHCMD("mpc next") },
+  { MODKEY|ShiftMask,             XK_period, spawn,          SHCMD("mpc repeat") },
 
-  { 0,            XF86XK_MonBrightnessUp,    spawn,          SHCMD("xbacklight -inc 15") },
-  { 0,            XF86XK_MonBrightnessDown,  spawn,          SHCMD("xbacklight -dec 15") },
+  { 0,                            XK_Print,  spawn,          SHCMD("maim pic-full-$(date '+%y%m%d-%H%M-%S').png") },
+  { ShiftMask,                    XK_Print,  spawn,          SHCMD("maimpick") },
+
+  { 0, XF86XK_AudioMute,         spawn,      SHCMD("pamixer -t; kill -44 $(pidof dwmblocks)") },
+  { 0, XF86XK_AudioRaiseVolume,  spawn,      SHCMD("pamixer --allow-boost -i 3; kill -44 $(pidof dwmblocks)") },
+  { 0, XF86XK_AudioLowerVolume,  spawn,      SHCMD("pamixer --allow-boost -d 3; kill -44 $(pidof dwmblocks)") },
+  { 0, XF86XK_AudioPrev,         spawn,      SHCMD("mpc prev") },
+  { 0, XF86XK_AudioNext,         spawn,      SHCMD("mpc next") },
+  { 0, XF86XK_AudioPause,        spawn,      SHCMD("mpc pause") },
+  { 0, XF86XK_AudioPlay,         spawn,      SHCMD("mpc play") },
+  { 0, XF86XK_AudioStop,         spawn,      SHCMD("mpc stop") },
+  { 0, XF86XK_AudioRewind,       spawn,      SHCMD("mpc seek -10") },
+  { 0, XF86XK_AudioForward,      spawn,      SHCMD("mpc seek +10") },
+  { 0, XF86XK_AudioMedia,        spawn,      SHCMD(TERMINAL " -e ncmpcpp") },
+  { 0, XF86XK_AudioMicMute,      spawn,      SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
+  { 0, XF86XK_PowerOff,          spawn,      SHCMD("sysact") },
+  { 0, XF86XK_Calculator,        spawn,      SHCMD(TERMINAL " -e bc -l") },
+  { 0, XF86XK_Sleep,             spawn,      SHCMD("sudo -A zzz") },
+  { 0, XF86XK_WWW,               spawn,      SHCMD("$BROWSER") },
+  { 0, XF86XK_DOS,               spawn,      SHCMD(TERMINAL) },
+  { 0, XF86XK_ScreenSaver,       spawn,      SHCMD("slock & xset dpms force off; mpc pause; pauseallmpv") },
+  { 0, XF86XK_TaskPane,          spawn,      SHCMD(TERMINAL " -e htop") },
+  { 0, XF86XK_Mail,              spawn,      SHCMD(TERMINAL " -e neomutt ; pkill -RTMIN+12 dwmblocks") },
+  { 0, XF86XK_MyComputer,        spawn,      SHCMD(TERMINAL " -e lf /") },
+  /* { 0, XF86XK_Battery,		spawn,		SHCMD("") }, */
+  { 0, XF86XK_Launch1,           spawn,      SHCMD("xset dpms force off") },
+  { 0, XF86XK_TouchpadToggle,    spawn,      SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") },
+  { 0, XF86XK_TouchpadOff,       spawn,      SHCMD("synclient TouchpadOff=1") },
+  { 0, XF86XK_TouchpadOn,        spawn,      SHCMD("synclient TouchpadOff=0") },
+  
+  { 0, XF86XK_MonBrightnessUp,   spawn,      SHCMD("xbacklight -inc 15") },
+  { 0, XF86XK_MonBrightnessDown, spawn,      SHCMD("xbacklight -dec 15") },
   
 };
 
