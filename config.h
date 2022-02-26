@@ -41,7 +41,7 @@ static char *colors[][3] = {
 static const char *const autostart[] = {
   /*  "xsettingsd", NULL, */
   "compton", NULL,
-  "feh", "--bg-fill", "~/backgrounds/mountains-1412683.jpg", NULL,
+  "feh", "--bg-fill", "/home/paul/backgrounds/mountains-1412683.jpg", NULL,
   "unclutter", NULL,
   NULL /* terminate */
 };
