@@ -43,6 +43,7 @@ static const char *const autostart[] = {
   "compton", NULL,
   "feh", "--bg-fill", "/home/paul/backgrounds/mountains-1412683.jpg", NULL,
   "unclutter", NULL,
+  "sh", "-c", "echo `date` >> ~/test-dwm.txt", NULL,
   NULL /* terminate */
 };
 
